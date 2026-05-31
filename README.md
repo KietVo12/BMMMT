@@ -17,6 +17,24 @@ Dự án này là minh chứng cho kiến trúc phân tầng chuẩn, sẵn sàn
 
 ---
 
+## 🏗️ Kiến Trúc Hệ Thống (Architecture)
+
+Mô hình hoạt động của luồng xác thực và xử lý dữ liệu trong hệ thống:
+
+```mermaid
+graph TD
+    Client[Client / Trình duyệt] -->|HTTP Request| Filter[AuthTokenFilter]
+    Filter -->|Chưa đăng nhập| FilterReject[Bị từ chối - 401 Unauthorized]
+    Filter -->|Token Hợp Lệ| Controller[Controllers]
+    Controller -->|Validation lỗi| GlobalException[GlobalExceptionHandler]
+    GlobalException -->|Trả về JSON 400| Client
+    Controller -->|Dữ liệu sạch| Service[Services]
+    Service -->|Truy vấn DB| Repository[Repositories]
+    Repository <--> MongoDB[(MongoDB)]
+```
+
+---
+
 ## 🛠️ Yêu Cầu Môi Trường (Prerequisites)
 
 Để chạy được dự án này, máy tính cần được cài đặt sẵn:
