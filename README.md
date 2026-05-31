@@ -32,11 +32,11 @@ graph TD
     Service -->|Truy vấn DB| Repository[Repositories]
     Repository <--> MongoDB[(MongoDB)]
 ```
-Giải thích luồng chạy:
-Khi có request tới, nó đập vào AuthTokenFilter đầu tiên. Filter này kiểm tra xem có "Vé vào cổng" (Token) hay không.
-Nếu lọt qua được, request đi tới Controller. Tại đây, @Valid sẽ rà soát dữ liệu (Ví dụ: Email có đúng định dạng?). Nếu sai, GlobalExceptionHandler nhảy ra bắt lỗi trả về ngay cho Client.
-Nếu dữ liệu chuẩn xác, Controller chuyển giao cho Service để xử lý logic kinh doanh (băm mật khẩu, kiểm tra trùng lặp).
-Cuối cùng Service nhờ Repository lưu xuống MongoDB.
+**Giải thích luồng chạy (Data Flow):**
+1. **(1) Đón chặn**: Khi Client gọi API, `AuthTokenFilter` sẽ chặn lại để kiểm tra xem có "Vé vào cổng" (JWT Token) hay không.
+2. **(2) Bắt lỗi (Validation)**: Nếu qua được cửa 1, Request tới `Controller`. Tại đây hệ thống rà soát dữ liệu đầu vào bằng `@Valid`. Nếu vi phạm (ví dụ: mật khẩu quá ngắn), `GlobalExceptionHandler` lập tức ném lỗi 400 Bad Request trả về cho Client.
+3. **(3) Xử lý logic**: Nếu dữ liệu chuẩn xác, `Controller` chuyển giao cho tầng `Service` để thực hiện các quy trình phức tạp (băm mật khẩu, kiểm tra trùng lặp).
+4. **(4) Lưu trữ**: Cuối cùng, tầng `Service` gọi `Repository` để lưu dữ liệu xuống cơ sở dữ liệu `MongoDB`.
 ---
 
 ## 🛠️ Yêu Cầu Môi Trường (Prerequisites)
