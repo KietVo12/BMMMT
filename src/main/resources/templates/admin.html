@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Admin Panel</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/admin">Admin Panel</a>
+                    </li>
+                </ul>
+                <div class="navbar-nav">
+                    <span class="nav-item nav-link text-light" id="userInfo"></span>
+                    <a class="nav-link" href="#" onclick="logout()">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">User Management</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Roles</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="userTableBody">
+                                    <!-- User data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">Add/Edit User</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" class="form-control" id="modalUsername" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="form-control" id="modalEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" class="form-control" id="modalPassword">
+                            <small class="form-text text-muted">Leave empty to keep existing password when editing</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Roles</label>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="roleUser">
+                                <label class="form-check-label">User</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="roleAdmin">
+                                <label class="form-check-label">Admin</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+
+            // Display admin name
+            document.getElementById('userInfo').textContent = `Admin: ${userInfo.username}`;
+
+            // Load users
+            loadUsers();
+        });
+
+        function loadUsers() {
+            const token = getCookie("token");
+            fetch('/api/admin/users', {
+                method: 'GET',
+                credentials: 'include'
+              })
+            .then(response => response.json())
+            .then(users => {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = '';
+                users.forEach(user => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${user.id}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>${user.roles.join(', ')}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editUser(${JSON.stringify(user)})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" id="btn-${user.id}" onclick="deleteUser("${user.id}")">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const currentUserId = payload.jti;
+                console.log(currentUserId);
+                const delteUserBtn = document.getElementById("btn-" + currentUserId)
+                delteUserBtn.remove();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function logout() {
+            delete_cookie('token');
+            localStorage.removeItem('userInfo');
+            window.location.href = '/login';
+        }
+        function delete_cookie(name) {
+            document.cookie = name +'=; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+        function deleteUser(userId) {
+            fetch(`/api/manage/users/delete/${userId}`, {
+                method: 'GET',
+                credentials: 'include' // include cookies
+              })
+            .then(data => {
+                alert("Success")
+            })
+            .catch(error => {
+                alert("Has error: " + error.message)
+            });
+        }
+        // Add other admin functions here (editUser, deleteUser, saveUser, etc.)
+    </script>
+</body>
+</html> 

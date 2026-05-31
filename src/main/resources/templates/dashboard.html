@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/main :: head"></head>
+<body class="bg-light">
+    <nav th:replace="layout/main :: nav"></nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Dashboard</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            Welcome <span id="username"></span>!
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Profile Information</h5>
+                                        <p class="card-text">Username: <span id="profile-username"></span></p>
+                                        <p class="card-text">Email: <span id="profile-email"></span></p>
+                                        <p class="card-text">Roles: <span id="profile-roles"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">API Testing</h5>
+                                        <div class="mb-3">
+                                            <p>Test different API endpoints with your JWT token:</p>
+                                            <div id="apiResponse" class="alert alert-info" style="display: none;"></div>
+                                            <button class="btn btn-primary me-2" onclick="testPublicEndpoint()">Test Public Endpoint</button>
+                                            <button class="btn btn-success me-2" onclick="testUserEndpoint()">Test User Endpoint</button>
+                                            <button class="btn btn-warning" onclick="testAdminEndpoint()">Test Admin Endpoint</button>
+                                        </div>
+                                        <div class="mt-4">
+                                            <h6>Your JWT Token:</h6>
+                                            <div class="form-group">
+                                                <textarea id="jwt-token" class="form-control" rows="3" readonly></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="layout/main :: footer"></div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Display token
+        const token = getCookie("token");
+        document.getElementById('jwt-token').value = token;
+
+        // Decode token payload
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        document.getElementById('username').textContent = payload.sub;
+        document.getElementById('profile-username').textContent = payload.sub;
+
+        // Fetch user details
+        fetchUserDetails();
+    });
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    function fetchUserDetails() {
+        const token = getCookie('token');
+        fetch('/api/auth/user', {
+            method: 'GET',
+            credentials: 'include'
+          })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('profile-email').textContent = data.email;
+            document.getElementById('profile-roles').textContent = data.roles.join(', ');
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function showApiResponse(message, isError = false) {
+        const apiResponse = document.getElementById('apiResponse');
+        apiResponse.textContent = message;
+        apiResponse.style.display = 'block';
+        apiResponse.className = 'alert ' + (isError ? 'alert-danger' : 'alert-success');
+    }
+
+    function testPublicEndpoint() {
+        fetch('/api/test/all', {
+            method: 'GET',
+            credentials: 'include'
+          })
+            .then(response => response.text())
+            .then(data => showApiResponse(data))
+            .catch(error => showApiResponse(error.message, true));
+    }
+
+    function testUserEndpoint() {
+        fetch('/api/test/user', {
+            method: 'GET',
+            credentials: 'include'
+          })
+        .then(response => response.text())
+        .then(data => showApiResponse(data))
+        .catch(error => showApiResponse(error.message, true));
+    }
+
+    function testAdminEndpoint() {
+        fetch('/api/test/admin', {
+            method: 'GET',
+            credentials: 'include'
+          })
+        .then(response => response.text())
+        .then(data => showApiResponse(data))
+        .catch(error => showApiResponse(error.message, true));
+    }
+    </script>
+</body>
+</html> 
