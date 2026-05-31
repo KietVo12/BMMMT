@@ -1,134 +1,118 @@
-# API RESTful Bảo Mật với Spring Boot và MongoDB
+# 🛡️ Enterprise Spring Boot Security & Authentication API
 
-Dự án này minh họa cách triển khai API RESTful bảo mật sử dụng Spring Boot với MongoDB làm cơ sở dữ liệu.
+Một hệ thống nền tảng Backend vững chắc (Boilerplate) được xây dựng trên **Spring Boot** và **MongoDB**, cung cấp các tính năng xác thực người dùng bằng JWT (JSON Web Token), Quản lý quyền hạn (RBAC), Xử lý lỗi toàn cục và Tự động Auditing.
 
-## Yêu Cầu Hệ Thống
+Dự án này là minh chứng tuyệt vời cho kiến trúc phân tầng chuẩn Doanh nghiệp, sẵn sàng để bạn "clone" về và mở rộng thành các dự án thực tế.
 
-- JDK 8
-- Gradle
-- MongoDB
-- IDE yêu thích của bạn (IntelliJ IDEA, Eclipse, etc.)
+---
 
-## Công Nghệ Sử Dụng
+## ✨ Tính Năng Nổi Bật (Features)
 
-- Spring Boot 2.7.0
-- Spring Security
-- Spring Data MongoDB
-- JWT (JSON Web Tokens)
-- Gradle
-- Thymeleaf (cho giao diện web)
-- Bootstrap 5 (cho UI)
+- 🔒 **Bảo mật tuyệt đối**: Xác thực Stateless (không trạng thái) sử dụng JWT. Mật khẩu được băm an toàn bằng BCrypt.
+- 👨‍💻 **Phân quyền (RBAC)**: Hỗ trợ linh hoạt các vai trò như `USER` và `ADMIN`. Bảo vệ chặt chẽ các API tương ứng.
+- 🛡️ **Kiểm duyệt Dữ liệu (Validation)**: Tự động đánh chặn các dữ liệu rác, email sai định dạng, mật khẩu yếu ngay từ "cửa ngõ" Controller.
+- ⚡ **Xử lý Ngoại lệ Toàn cục**: Bắt mọi lỗi xảy ra trong hệ thống và trả về chuỗi JSON thân thiện, đồng nhất (`GlobalExceptionHandler`).
+- 🕒 **Tự động Auditing**: Tự động lưu vết thời gian `createdAt` và `updatedAt` mỗi khi Dữ liệu (User) có sự thay đổi.
+- 🏗️ **Kiến trúc Clean Architecture**: Tách biệt rõ ràng ranh giới giữa Controller, Service, DTO và Repository.
 
-## Cấu Trúc Dự Án
+---
 
-```
-src/
-├── main/
-│   ├── java/
-│   │   └── com/
-│   │       └── example/
-│   │           ├── controller/     # Các controller REST và controller view
-│   │           ├── model/          # Các model dữ liệu
-│   │           ├── repository/     # Các repository MongoDB
-│   │           ├── security/       # Cấu hình bảo mật và tiện ích JWT
-│   │           ├── service/        # Các service xử lý nghiệp vụ
-│   │           └── SecureApiApplication.java
-│   └── resources/
-│       ├── static/                 # Tài nguyên tĩnh (CSS, JS)
-│       ├── templates/              # Các template Thymeleaf
-│       └── application.properties  # Cấu hình ứng dụng
-```
+## 🛠️ Yêu Cầu Môi Trường (Prerequisites)
 
-## Giải Thích Các Thành Phần
+Để chạy được dự án này, máy tính của bạn cần cài đặt sẵn:
+1. **Java Development Kit (JDK 8)** (hoặc cao hơn).
+2. **MongoDB** (Đang chạy ở cổng mặc định `localhost:27017`).
+3. **Trình duyệt / Postman** (để test API).
+*(Lưu ý: Dự án sử dụng Gradle wrapper nên bạn không cần cài Gradle thủ công trên máy).*
 
-### 1. Controllers
-- `AuthController`: Xử lý xác thực người dùng (đăng nhập/đăng ký)
-- `TestController`: Chứa các endpoint kiểm tra cho các vai trò người dùng khác nhau
-- `ViewController`: Quản lý định tuyến trang web
+---
 
-### 2. Models
-- `User`: Entity người dùng với tích hợp Spring Security
+## 🚀 Hướng Dẫn Cài Đặt & Chạy Dự Án (Getting Started)
 
-### 3. Security
-- `WebSecurityConfig`: Cấu hình bảo mật chính
-- `JwtUtils`: Tạo và xác thực token JWT
-- `AuthTokenFilter`: Bộ lọc xác thực JWT
-
-### 4. Services
-- `UserDetailsServiceImpl`: Service chi tiết người dùng tùy chỉnh cho Spring Security
-
-### 5. Repositories
-- `UserRepository`: Repository MongoDB cho các thao tác người dùng
-
-## Cài Đặt & Thiết Lập
-
-1. Clone repository
-2. Đảm bảo MongoDB đang chạy trên localhost:27017
-3. Cấu hình application.properties:
-   ```properties
-   spring.data.mongodb.host=localhost
-   spring.data.mongodb.port=27017
-   spring.data.mongodb.database=secureapi
-   jwt.secret=yourSecretKey
-   jwt.expiration=86400000
-   server.port=8080
-   ```
-4. Chạy ứng dụng:
-   ```bash
-   ./gradlew bootRun
-   ```
-   Run java SecureApiApplication.java
-
-## Tính Năng Bảo Mật
-
-- Xác thực dựa trên JWT
-- Mã hóa mật khẩu sử dụng BCrypt
-- Phân quyền dựa trên vai trò (USER, ADMIN)
-- Bảo mật endpoint với Spring Security
-- Bảo mật tài liệu MongoDB
-- Cấu hình CORS
-- Quản lý phiên làm việc
-
-## Tài Liệu API
-
-API sẽ có sẵn tại `http://localhost:8080`
-
-### Endpoint Xác Thực:
-- POST /api/auth/signup - Đăng ký người dùng mới
-- POST /api/auth/login - Đăng nhập người dùng
-
-### Endpoint Kiểm Tra:
-- GET /api/test/all - Truy cập công khai
-- GET /api/test/user - Yêu cầu vai trò USER
-- GET /api/test/admin - Yêu cầu vai trò ADMIN
-
-### Trang Web:
-- / - Trang chủ
-- /login - Trang đăng nhập
-- /register - Trang đăng ký
-- /dashboard - Bảng điều khiển người dùng (yêu cầu xác thực)
-- /admin - Bảng điều khiển admin (yêu cầu vai trò admin)
-
-## Kiểm Thử
-
-Chạy kiểm thử bằng lệnh:
+### Bước 1: Tải mã nguồn về máy
 ```bash
-./gradlew test
+git clone https://github.com/KietVo12/BMMMT.git
+cd BMMMT
+# Chuyển sang nhánh kiến trúc nâng cao
+git checkout feature/enterprise-architecture 
 ```
 
-## Phát Triển
+### Bước 2: Cấu hình Cơ sở dữ liệu
+Đảm bảo bạn đã bật ứng dụng MongoDB (hoặc MongoDB Compass). Dự án sẽ tự động kết nối và tạo cơ sở dữ liệu có tên `secureapi` ở cổng `27017`.
+Nếu MongoDB của bạn có dùng mật khẩu, hãy sửa cấu hình tại file `src/main/resources/application.properties`:
+```properties
+spring.data.mongodb.host=localhost
+spring.data.mongodb.port=27017
+spring.data.mongodb.database=secureapi
+# Bỏ comment nếu MongoDB có pass:
+# spring.data.mongodb.username=root
+# spring.data.mongodb.password=password123
+```
 
-1. Dự án sử dụng Gradle để quản lý phụ thuộc
-2. Các phụ thuộc chính được định nghĩa trong build.gradle
-3. Cấu hình ứng dụng có thể được thiết lập trong application.properties hoặc application.yml
-4. Cấu hình bảo mật nằm trong WebSecurityConfig.java
-5. Cấu hình JWT nằm trong application.properties
+### Bước 3: Chạy ứng dụng (Build & Run)
+Mở Terminal / Command Prompt tại thư mục gốc của dự án và gõ lệnh:
 
-## Thực Hành Bảo Mật Tốt Nhất
+- **Dành cho Windows:**
+  ```cmd
+  .\gradlew.bat bootRun
+  ```
+- **Dành cho macOS / Linux:**
+  ```bash
+  ./gradlew bootRun
+  ```
 
-1. Tất cả mật khẩu được mã hóa bằng BCrypt
-2. Sử dụng token JWT cho xác thực không trạng thái
-3. Triển khai kiểm soát truy cập dựa trên vai trò
-4. Cấu hình CORS đúng cách
-5. Quản lý phiên làm việc không trạng thái
-6. Triển khai bảo mật MongoDB 
+Hệ thống sẽ tải toàn bộ thư viện và chạy máy chủ ở cổng `8080`. Khi thấy dòng chữ `Started SecureApiApplication`, chúc mừng bạn đã cài đặt thành công! 🎉
+
+---
+
+## 📂 Kiến Trúc Thư Mục (Project Structure)
+
+```text
+src/main/java/com/example/
+├── config/             # Cấu hình dự án (MongoDB Auditing, Security Beans)
+├── controller/         # Chứa API Endpoint và các định tuyến Web (View)
+├── dto/                # Data Transfer Objects (Hứng/Trả dữ liệu chuẩn xác)
+├── exception/          # Global Exception Handler (Xử lý bắt lỗi trả về JSON)
+├── model/              # Entity ánh xạ trực tiếp vào Database MongoDB
+├── repository/         # Chịu trách nhiệm query/ghi dữ liệu vào DB
+├── security/           # Lõi bảo mật (JWT Utils, Token Filter)
+└── service/            # Tầng Logic nghiệp vụ phức tạp (AuthService)
+```
+
+---
+
+## 🌐 Các API Chức Năng Chính (Endpoints)
+
+Bạn có thể sử dụng Postman hoặc giao diện Web tích hợp sẵn để thử nghiệm các API này:
+
+**1. Xác thực & Đăng nhập (Authentication)**
+- `POST /api/auth/signup`: Đăng ký tài khoản mới (Yêu cầu đầy đủ username, email, firstName, lastName, password).
+- `POST /api/auth/login`: Đăng nhập lấy Token JWT.
+- `GET /api/auth/user`: Xem thông tin tài khoản hiện tại (Yêu cầu gửi kèm Token trên Header).
+
+**2. Test Quyền Hạn (Authorization)**
+- `GET /api/test/all`: Mở công khai, ai cũng xem được.
+- `GET /api/test/user`: Yêu cầu phải có Token hợp lệ.
+- `GET /api/test/admin`: Yêu cầu Token hợp lệ và phải có quyền `ROLE_ADMIN`.
+
+**3. Giao Diện (Thymeleaf UI)**
+Dự án được tích hợp sẵn Frontend đơn giản tại `http://localhost:8080/`. Các trang khả dụng:
+- `/login`, `/register`: Các biểu mẫu xác thực.
+- `/dashboard`: Trang dành cho thành viên thông thường.
+- `/admin`: Trang quản trị nội bộ.
+
+---
+
+## 🐛 Khắc phục lỗi thường gặp (Troubleshooting)
+
+1. **Lỗi `Connection refused: no further information`**:
+   - *Nguyên nhân*: Bạn chưa bật MongoDB hoặc cổng `27017` bị khóa.
+   - *Cách giải quyết*: Hãy cài đặt/bật MongoDB Service lên.
+
+2. **Lỗi `Dữ liệu đầu vào không hợp lệ (Status 400)`**:
+   - *Nguyên nhân*: Lúc test `/api/auth/signup`, bạn gửi thiếu trường hoặc email sai định dạng.
+   - *Cách giải quyết*: Xem lại format body JSON, dự án này đã bật `Validation` rất khắt khe để bảo vệ Database!
+
+---
+
+*Phát triển và bảo trì bởi Kiệt Võ.*
