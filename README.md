@@ -2,7 +2,7 @@
 
 Một hệ thống nền tảng Backend vững chắc (Boilerplate) được xây dựng trên **Spring Boot** và **MongoDB**, cung cấp các tính năng xác thực người dùng bằng JWT (JSON Web Token), Quản lý quyền hạn (RBAC), Xử lý lỗi toàn cục và Tự động Auditing.
 
-Dự án này là minh chứng tuyệt vời cho kiến trúc phân tầng chuẩn Doanh nghiệp, sẵn sàng để bạn "clone" về và mở rộng thành các dự án thực tế.
+Dự án này là minh chứng cho kiến trúc phân tầng chuẩn, sẵn sàng để có thể "clone" về và mở rộng nghiên cứu thành các dự án thực tế.
 
 ---
 
@@ -19,7 +19,7 @@ Dự án này là minh chứng tuyệt vời cho kiến trúc phân tầng chu�
 
 ## 🛠️ Yêu Cầu Môi Trường (Prerequisites)
 
-Để chạy được dự án này, máy tính của bạn cần cài đặt sẵn:
+Để chạy được dự án này, máy tính cần được cài đặt sẵn:
 1. **Java Development Kit (JDK 8)** (hoặc cao hơn).
 2. **MongoDB** (Đang chạy ở cổng mặc định `localhost:27017`).
 3. **Trình duyệt / Postman** (để test API).
@@ -106,7 +106,7 @@ Dự án được tích hợp sẵn Frontend đơn giản tại `http://localhos
 ## 🐛 Khắc phục lỗi thường gặp (Troubleshooting)
 
 1. **Lỗi `Connection refused: no further information`**:
-   - *Nguyên nhân*: Bạn chưa bật MongoDB hoặc cổng `27017` bị khóa.
+   - *Nguyên nhân*: Thường là chưa bật MongoDB hoặc cổng `27017` bị khóa.
    - *Cách giải quyết*: Hãy cài đặt/bật MongoDB Service lên.
 
 2. **Lỗi `Dữ liệu đầu vào không hợp lệ (Status 400)`**:
@@ -114,5 +114,3 @@ Dự án được tích hợp sẵn Frontend đơn giản tại `http://localhos
    - *Cách giải quyết*: Xem lại format body JSON, dự án này đã bật `Validation` rất khắt khe để bảo vệ Database!
 
 ---
-
-*Phát triển và bảo trì bởi Kiệt Võ.*
